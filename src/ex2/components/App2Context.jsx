@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { createContext, useState } from "react";
 import axios from "axios";
 import { newWebSocket } from "../../components/AppApi";
@@ -9,6 +9,7 @@ export function App2ContextProvider(props) {
   const [items, setItems] = useState([]);
   const [token, setToken] = useState();
   const [questionIds, setQuestioIds] = useState([]);
+  const [downloaded, setDownloaded] = useState(0);
 
   const fetchItems = () => {
     axios
@@ -23,17 +24,34 @@ export function App2ContextProvider(props) {
     axios
       .post("http://localhost:3000/auth", { id })
       .then((resp) => {
-        if(resp.status === 201)
-            setIsAuth(true);
+        if (resp.status === 201) setIsAuth(true);
         setToken(resp.data.token);
         setQuestioIds(resp.data.questionIds);
       })
       .catch((error) => console.error(error));
   };
 
+  const startDownload = useCallback(() => {
+    if (questionIds.length > 0 && downloaded < questionIds.length) {
+      questionIds.forEach((elem) => {
+        axios.get(`http://localhost:3000/question/${elem}`).then((resp) => {
+          setDownloaded(downloaded + 1);
+        });
+      });
+    }
+  }, [questionIds, downloaded]);
+
   return (
     <App2Context.Provider
-      value={{ items, isAuth, authenticate, token, questionIds }}
+      value={{
+        items,
+        isAuth,
+        authenticate,
+        token,
+        questionIds,
+        downloaded,
+        startDownload,
+      }}
       {...props}
     />
   );
