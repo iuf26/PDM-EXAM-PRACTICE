@@ -21,7 +21,7 @@ export function List() {
     <IonGrid>
       <IonRow>
         <IonCol>
-          {/* <Notification /> */}
+          <Notification />
           <h1>Messages </h1>
          <UserMessagesList user={user}/>
         </IonCol>
