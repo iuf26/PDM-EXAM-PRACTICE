@@ -7,19 +7,17 @@ export function UserMessagesList({ user }) {
   const { messages } = useContext(AppContext);
   const [userMessages, setUserMessages] = useState([]);
   useEffect(() => {
-    const newValue = [
-      ...messages
-        .filter((current) => current.sender === user)
-        .sort((a, b) => b.created - a.created),
-    ];
-    console.log({newValue});
+    console.log('user changed');
+    const newValue = messages
+      .filter((current) => current.sender === user)
+      .sort((a, b) => b.created - a.created);
     setUserMessages(newValue);
-  }, [messages,user]);
+  }, [messages, user]);
 
   return (
     <IonList>
       {userMessages.length > 0
-        ? userMessages.map((elem,index) => <Item elem={elem} key={index}/>)
+        ? userMessages.map((elem, index) => <Item elem={elem} key={index} />)
         : null}
     </IonList>
   );

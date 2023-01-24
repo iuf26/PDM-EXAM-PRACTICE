@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useEffect } from "react";
 import {
   IonHeader,
   IonLabel,
@@ -11,7 +11,7 @@ import {
 } from "@ionic/react";
 import { Item } from "./Item";
 import { getUsers } from "../../helpers/list";
-import axios from "axios";
+import { usersSortedByCriteria } from "../../helpers/list.js";
 import { AppContext } from "../AppContext.jsx";
 
 export function UserList({ messagesList }) {
@@ -27,30 +27,53 @@ export function UserList({ messagesList }) {
   );
 }
 
-export function UserUnreadMessagesList({ elems, setUser }) {
-  const { messages, fetchMessages  } = useContext(AppContext);
+export function UserUnreadMessagesList({ setUser }) {
+  const {
+    messages,
+    netConnection,
+    setSeenMessagesOfflineMode,
+    notifyServerByReadMessages,
+  } = useContext(AppContext);
+  const [elems, setElems] = useState([]);
+  useEffect(() => {
+    if (messages) {
+      setElems(usersSortedByCriteria(messages));
+    }
+  }, [messages]);
 
-  const onUserClicked = useCallback((user) => {
-    const updatedMessages = [];
-    messages.forEach((elem) => {
-      if (elem.sender === user && !elem.read) {
-        updatedMessages.push({ ...elem, read: true });
-        return;
+  const getSeenMessages = useCallback(
+    (user) => {
+      //structuredClone does a deep copy
+      return structuredClone(
+        messages
+          .filter((current) => current.sender === user && !current.read)
+          .map((current) => {
+            return { ...current, read: true };
+          })
+      );
+    },
+    [messages]
+  );
+
+  const onUserClicked = useCallback(
+    (user) => {
+      if (netConnection) {
+        //ONLINE MODE
+        notifyServerByReadMessages(getSeenMessages(user));
+      } else {
+        //OFFLINE MODE
+        setSeenMessagesOfflineMode(getSeenMessages(user));
       }
-      updatedMessages.push({ ...elem });
-    });
-
-    messages
-      .filter((current) => current.sender === user && !current.read)
-      .forEach((item) => {
-        const toSend = { ...item, read: true };
-        axios
-          .put(`http://localhost:3000/message/${item.id}`, toSend)
-          .catch((error) => error);
-      });
-    setUser(user)
-    fetchMessages();
-  },[messages,setUser,fetchMessages]);
+      setUser(user);
+    },
+    [
+      setUser,
+      netConnection,
+      setSeenMessagesOfflineMode,
+      notifyServerByReadMessages,
+      getSeenMessages,
+    ]
+  );
 
   return (
     <IonList>

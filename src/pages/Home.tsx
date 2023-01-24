@@ -14,8 +14,8 @@ const Home: React.FC = () => {
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
-       {/* <List/> */}
-       <MainPageEx2/>
+       <List/>
+       {/* <MainPageEx2/> */}
       </IonContent>
     </IonPage>
   );
