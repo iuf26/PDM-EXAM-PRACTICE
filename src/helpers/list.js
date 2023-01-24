@@ -9,13 +9,18 @@ export const getUsersWithUnreadMessages = (messages) => {
 };
 
 export const getUsersUnreadMessagesCount = (messages) => {
-  return messages.reduce((acc, currentValue) => {
+    const allUsersCountNull =  messages.reduce((acc, currentValue) => {
+        acc[currentValue.sender] = 0;
+        return { ...acc };
+      }, {});
+    const allUsers =  messages.filter(elem => !elem.read).reduce((acc, currentValue) => {
     acc[currentValue.sender] =
       acc[currentValue.sender] || acc[currentValue.sender] === 0
         ? acc[currentValue.sender] + 1
         : 0;
     return { ...acc };
   }, {});
+  return {...allUsersCountNull, ...allUsers}
 };
 
 const getLastMessageSendByUserThatIsUnread = (messages) => {
