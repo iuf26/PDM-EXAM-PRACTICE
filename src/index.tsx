@@ -1,14 +1,14 @@
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App3 from './ex3/App3';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import { createRoot } from "react-dom/client";
+import AppExam from "./exam/AppExam";
+import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
+import reportWebVitals from "./reportWebVitals";
 
-const container = document.getElementById('root');
+const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
-    <App3 />
+    <AppExam />
   </React.StrictMode>
 );
 
