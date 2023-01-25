@@ -10,6 +10,7 @@ export function App2ContextProvider(props) {
   const [token, setToken] = useState();
   const [questionIds, setQuestioIds] = useState([]);
   const [downloaded, setDownloaded] = useState(0);
+  const [questionsDownloaded, setQuestionsDownlaoded ] = useState(false);
 
   const fetchItems = () => {
     axios
@@ -35,6 +36,7 @@ export function App2ContextProvider(props) {
     if (questionIds.length > 0 && downloaded < questionIds.length) {
       questionIds.forEach((elem) => {
         axios.get(`http://localhost:3000/question/${elem}`).then((resp) => {
+            if(downloaded + 1  === questionIds.length)setQuestionsDownlaoded(true)
           setDownloaded(downloaded + 1);
         });
       });
@@ -51,6 +53,7 @@ export function App2ContextProvider(props) {
         questionIds,
         downloaded,
         startDownload,
+        questionsDownloaded
       }}
       {...props}
     />
